@@ -21,15 +21,15 @@ app.whenReady().then(() => {
   ipcMain.on("show-context-menu", (event) => {
     const template = [
       {
-        label: "Option 1",
+        label: "Increment",
         click: () => {
-          event.sender.send("context-menu-command", "Option 1");
+          event.sender.send("update-counter", 1);
         },
       },
       {
-        label: "Option 2",
+        label: "Decrement",
         click: () => {
-          event.sender.send("context-menu-command", "Option 2");
+          event.sender.send("update-counter", "-1");
         },
       },
     ];
