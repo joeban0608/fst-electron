@@ -3,30 +3,27 @@ const path = require("node:path");
 const { updateElectronApp } = require("update-electron-app");
 updateElectronApp();
 
-function createWindow() {
-  const mainWindow = new BrowserWindow({
+const createWindow = () => {
+  const win = new BrowserWindow({
+    width: 1920,
+    height: 600,
     webPreferences: {
       preload: path.join(__dirname, "preload.js"),
     },
   });
 
-  ipcMain.on("set-title", (event, title) => {
-    const webContents = event.sender;
-    const win = BrowserWindow.fromWebContents(webContents);
-    win.setTitle(title);
-  });
-
-  mainWindow.loadFile("index.html");
-}
+  win.loadFile("index.html");
+};
 
 app.whenReady().then(() => {
+  ipcMain.handle("ping", () => "pong");
   createWindow();
 
-  app.on("activate", function () {
+  app.on("activate", () => {
     if (BrowserWindow.getAllWindows().length === 0) createWindow();
   });
 });
 
-app.on("window-all-closed", function () {
+app.on("window-all-closed", () => {
   if (process.platform !== "darwin") app.quit();
 });

@@ -1,32 +1,14 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
   <head>
-    <meta charset="UTF-8" />
+    <meta charset="UTF-8">
     <!-- https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP -->
-    <meta
-      http-equiv="Content-Security-Policy"
-      content="default-src 'self'; script-src 'self'"
-    />
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'">
     <title>Hello World!</title>
-    <link rel="stylesheet" href="./assets/index-DiwrgTda.css" />
-    <meta name="version" content="2024-1022-1655" />
   </head>
   <body>
-    <div>
-      <h1>Hello World! hi cool hello</h1>
-      <p>
-        We are using Node.js <span id="node-version"></span>, Chromium
-        <span id="chrome-version"></span>, and Electron
-        <span id="electron-version"></span>.
-      </p>
-      <hr />
-      <!-- 加載外部的 renderer.js 文件 -->
-      <p id="info"></p>
-      <hr />
-      <div id="root"></div>
-      <script src="./render.js"></script>
-      <script src="./assets/index-f40OySzR.js"></script>
-      <hr />
-    </div>
+    Title: <input id="title"/>
+    <button id="btn" type="button">Set</button>
+    <script src="./renderer.js"></script>
   </body>
 </html>
