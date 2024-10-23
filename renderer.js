@@ -1,8 +1,7 @@
-const counter = document.getElementById("counter");
-
-window.electronAPI.onUpdateCounter((value) => {
-  const oldValue = Number(counter.innerText);
-  const newValue = oldValue + value;
-  counter.innerText = newValue.toString();
-  window.electronAPI.counterValue(newValue);
-});
+// 當電子的消息端口可用時，發送消息
+console.log('outSide here')
+if (window.electronMessagePort) {
+  console.log("here");
+  window.electronMessagePort.postMessage("ping from Main Window");
+}
+console.log('after here')
