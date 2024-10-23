@@ -3,6 +3,6 @@ const titleInput = document.getElementById("title");
 setButton.addEventListener("click", () => {
   if (titleInput) {
     const title = titleInput.value;
-    window.electronAPI.setTitle(title);
+    window.electronAPI.changeTitle(title);
   }
 });

@@ -3,6 +3,11 @@ const path = require("node:path");
 const { updateElectronApp } = require("update-electron-app");
 updateElectronApp();
 
+const mainHandleSetTitleFromRenderMsg = (event, title) => {
+  const webContents = event.sender;
+  const win = BrowserWindow.fromWebContents(webContents);
+  win.setTitle(title);
+};
 function createWindow() {
   const mainWindow = new BrowserWindow({
     webPreferences: {
@@ -10,11 +15,8 @@ function createWindow() {
     },
   });
 
-  ipcMain.on("set-title", (event, title) => {
-    const webContents = event.sender;
-    const win = BrowserWindow.fromWebContents(webContents);
-    win.setTitle(title);
-  });
+  // change-title or set-title 沒差，這只是個 channel, 對應 renderer 的 channel
+  ipcMain.on("change-title", mainHandleSetTitleFromRenderMsg);
 
   mainWindow.loadFile("index.html");
 }
