@@ -1,29 +1,29 @@
-const { app, BrowserWindow, ipcMain, dialog } = require("electron/main");
+const { app, BrowserWindow, ipcMain } = require("electron");
 const path = require("node:path");
+const { updateElectronApp } = require("update-electron-app");
+updateElectronApp();
 
-// render 使用 window.electronAPI.openFile() 拿回 handleFileOpen return 的 value (但拿到會是一個 promise)
-async function handleFileOpen() {
-  const { canceled, filePaths } = await dialog.showOpenDialog();
-  // return 即是傳 value 至 renderer
-  if (!canceled) {
-    return filePaths[0];
-  } else {
-    return "file is not found";
-  }
-}
-
+const mainHandleSetTitleFromRenderMsg = (event, title) => {
+  const webContents = event.sender;
+  const win = BrowserWindow.fromWebContents(webContents);
+  win.setTitle(title);
+};
 function createWindow() {
   const mainWindow = new BrowserWindow({
     webPreferences: {
       preload: path.join(__dirname, "preload.js"),
     },
   });
+
+  // change-title or set-title 沒差，這只是個 channel, 對應 renderer 的 channel
+  ipcMain.on("change-title", mainHandleSetTitleFromRenderMsg);
+
   mainWindow.loadFile("index.html");
 }
 
 app.whenReady().then(() => {
-  ipcMain.handle("dialog:openFile", handleFileOpen);
   createWindow();
+
   app.on("activate", function () {
     if (BrowserWindow.getAllWindows().length === 0) createWindow();
   });
