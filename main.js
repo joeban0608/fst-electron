@@ -32,10 +32,9 @@ app.whenReady().then(() => {
     ];
 
     const menu = Menu.buildFromTemplate(template);
-    Menu.setApplicationMenu(menu);
-
     menu.popup(BrowserWindow.fromWebContents(event.sender));
   });
+
   createWindow();
 
   app.on("activate", function () {
