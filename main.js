@@ -1,48 +1,62 @@
-const { app, BrowserWindow, Menu, ipcMain } = require("electron/main");
-const path = require("node:path");
+const { app, BrowserWindow, Menu, ipcMain } = require("electron");
+const path = require("path");
 
-function createWindow() {
-  const mainWindow = new BrowserWindow({
+let mainWindow;
+
+app.whenReady().then(() => {
+  mainWindow = new BrowserWindow({
+    width: 800,
+    height: 600,
     webPreferences: {
       preload: path.join(__dirname, "preload.js"),
+      contextIsolation: true,
+      enableRemoteModule: false,
+      nodeIntegration: false,
     },
   });
-  console.log("app", app);
 
+  mainWindow.loadFile("index.html");
+
+  // 自定義右鍵選單
+  ipcMain.on("show-context-menu", (event) => {
+    const template = [
+      {
+        label: "Option 1",
+        click: () => {
+          event.sender.send("context-menu-command", "Option 1");
+        },
+      },
+      {
+        label: "Option 2",
+        click: () => {
+          event.sender.send("context-menu-command", "Option 2");
+        },
+      },
+    ];
+
+    const menu = Menu.buildFromTemplate(template);
+    menu.popup(BrowserWindow.fromWebContents(event.sender));
+  });
+
+  // 設置 macOS 上的應用菜單
   const menu = Menu.buildFromTemplate([
     {
       label: app.name,
-      submenu: [
-        {
-          click: () => mainWindow.webContents.send("update-counter", 1),
-          label: "Increment",
-        },
-        {
-          click: () => mainWindow.webContents.send("update-counter", -1),
-          label: "Decrement",
-        },
-      ],
+      submenu: [{ role: "about" }, { type: "separator" }, { role: "quit" }],
     },
   ]);
 
   Menu.setApplicationMenu(menu);
-  mainWindow.loadFile("index.html");
 
-  // Open the DevTools.
-  mainWindow.webContents.openDevTools();
-}
-
-app.whenReady().then(() => {
-  ipcMain.on("counter-value", (_event, value) => {
-    console.log(value); // will print value to Node console
+  app.on("activate", () => {
+    if (BrowserWindow.getAllWindows().length === 0) {
+      createWindow();
+    }
   });
-  createWindow();
 
-  app.on("activate", function () {
-    if (BrowserWindow.getAllWindows().length === 0) createWindow();
+  app.on("window-all-closed", () => {
+    if (process.platform !== "darwin") {
+      app.quit();
+    }
   });
-});
-
-app.on("window-all-closed", function () {
-  if (process.platform !== "darwin") app.quit();
 });

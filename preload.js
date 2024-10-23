@@ -1,6 +1,6 @@
-const { contextBridge, ipcRenderer } = require('electron/renderer')
+const { contextBridge, ipcRenderer } = require("electron");
 
-contextBridge.exposeInMainWorld('electronAPI', {
-  onUpdateCounter: (callback) => ipcRenderer.on('update-counter', (_event, value) => callback(value)),
-  counterValue: (value) => ipcRenderer.send('counter-value', value)
-})
+contextBridge.exposeInMainWorld("electronAPI", {
+  showContextMenu: () => ipcRenderer.send("show-context-menu"),
+  onContextMenuCommand: (callback) => ipcRenderer.on("context-menu-command", (event, command) => callback(command)),
+});
