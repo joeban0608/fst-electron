@@ -1,22 +1,19 @@
 const { app, BrowserWindow, Menu, ipcMain } = require("electron");
 const path = require("path");
 
-let mainWindow;
-
-app.whenReady().then(() => {
-  mainWindow = new BrowserWindow({
+const createWindow = () => {
+  const mainWindow = new BrowserWindow({
     width: 800,
     height: 600,
     webPreferences: {
       preload: path.join(__dirname, "preload.js"),
-      contextIsolation: true,
-      enableRemoteModule: false,
-      nodeIntegration: false,
     },
   });
 
   mainWindow.loadFile("index.html");
+};
 
+app.whenReady().then(() => {
   // 自定義右鍵選單
   ipcMain.on("show-context-menu", (event) => {
     const template = [
@@ -35,28 +32,17 @@ app.whenReady().then(() => {
     ];
 
     const menu = Menu.buildFromTemplate(template);
+    Menu.setApplicationMenu(menu);
+
     menu.popup(BrowserWindow.fromWebContents(event.sender));
   });
+  createWindow();
 
-  // 設置 macOS 上的應用菜單
-  const menu = Menu.buildFromTemplate([
-    {
-      label: app.name,
-      submenu: [{ role: "about" }, { type: "separator" }, { role: "quit" }],
-    },
-  ]);
-
-  Menu.setApplicationMenu(menu);
-
-  app.on("activate", () => {
-    if (BrowserWindow.getAllWindows().length === 0) {
-      createWindow();
-    }
+  app.on("activate", function () {
+    if (BrowserWindow.getAllWindows().length === 0) createWindow();
   });
+});
 
-  app.on("window-all-closed", () => {
-    if (process.platform !== "darwin") {
-      app.quit();
-    }
-  });
+app.on("window-all-closed", function () {
+  if (process.platform !== "darwin") app.quit();
 });
