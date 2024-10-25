@@ -6,7 +6,8 @@ function createWindow() {
   const win = new BrowserWindow({
     width: 800,
     height: 600,
-    frame: false,
+    // frame: false, // 無邊匡
+    titleBarStyle: "hidden", // Apply custom title bar styles
   });
 
   win.loadFile("index.html");
